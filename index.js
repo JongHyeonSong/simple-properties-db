@@ -40,14 +40,10 @@ class SimplePropertiesDB {
 
             //get key and value
             const [key, ...valueArr] = line.split("=");
-            console.log("🚀 ~ SimplePropertiesDB ~ _loadData ~ valueArr:", valueArr)
             const value = valueArr.join("=").trim();
-            console.log("🚀 ~ SimplePropertiesDB ~ _loadData ~ value:", value, value === "")
 
             originLines.push({type: "property", key, value});
             parsedData[key] = this._parseValue(value);
-            console.log("🚀 ~ SimplePropertiesDB ~ _loadData ~ value:", parsedData[key])
-
         })
 
         return {originLines, parsedData};
