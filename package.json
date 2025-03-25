@@ -4,9 +4,23 @@
   "description": "A simple file-based key-value properties database for Node.js",
   "main": "index.js",
   "scripts": {
-    "test": "node test.js"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "coverage": "jest --coverage"
   },
-  "keywords": ["properties", "database", "key-value", "file-storage"],
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "keywords": [
+    "properties",
+    "database",
+    "key-value",
+    "file-storage"
+  ],
   "author": "sjh",
-  "license": "MIC"
+  "license": "MIT",
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0"
+  }
 }
