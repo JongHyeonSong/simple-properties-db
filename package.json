@@ -17,10 +17,13 @@
     "key-value",
     "file-storage"
   ],
-  "author": "sjh",
+  "author": "sjh <siha159159@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0"
+  },
+  "engines": {
+    "node": ">=12.0.0"
   }
 }
