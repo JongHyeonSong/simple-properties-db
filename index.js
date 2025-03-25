@@ -15,6 +15,9 @@ class SimplePropertiesDB {
     _parseValue(value) {
         if (value === "true") return true;
         if (value === "false") return false;
+
+        // isNan('') == false so if empty("") return empty string
+        if (value === "") return value;
         if (!isNaN(value)) return parseFloat(value);
         return value;
     }
@@ -37,10 +40,14 @@ class SimplePropertiesDB {
 
             //get key and value
             const [key, ...valueArr] = line.split("=");
+            console.log("🚀 ~ SimplePropertiesDB ~ _loadData ~ valueArr:", valueArr)
             const value = valueArr.join("=").trim();
+            console.log("🚀 ~ SimplePropertiesDB ~ _loadData ~ value:", value, value === "")
 
             originLines.push({type: "property", key, value});
             parsedData[key] = this._parseValue(value);
+            console.log("🚀 ~ SimplePropertiesDB ~ _loadData ~ value:", parsedData[key])
+
         })
 
         return {originLines, parsedData};
@@ -66,7 +73,7 @@ class SimplePropertiesDB {
             originLines.push({type: "property", key, value});
         }
 
-        const data = originLines.map(line => `${line.key}=${line.value}`).join("\n");
+        const data = originLines.map(line => line.type === "comment" ? line.value : `${line.key}=${line.value}`).join("\n");
 
         fs.writeFileSync(this.DB_FILE_PATH, data);
     }

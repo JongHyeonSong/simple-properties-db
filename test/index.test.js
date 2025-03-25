@@ -13,7 +13,7 @@ describe("PropertiesDB", () => {
     // Create a fresh database before each test
     spDb = new SimplePropertiesDB(path.resolve("./"));
 
-    spDb.DB_FILE_PATH
+    spDb.DB_FILE_PATH;
   });
 
   afterEach(() => {
@@ -22,86 +22,100 @@ describe("PropertiesDB", () => {
       fs.unlinkSync(spDb.DB_FILE_PATH);
     }
   });
+  test("should return empty string when set empty string", () => {
+    spDb.set("username", "");
+    expect(spDb.get("username")).toBe("");
+  });
 
   test("should set and get a string value", () => {
     spDb.set("username", "sjh");
-    expect(spDb.get('username')).toBe('sjh');
+    expect(spDb.get("username")).toBe("sjh");
   });
 
-  test('should set and get a number value', () => {
-    spDb.set('age', 30);
-    expect(spDb.get('age')).toBe(30);
+  test("should set and get a number value", () => {
+    spDb.set("age", 30);
+    expect(spDb.get("age")).toBe(30);
   });
 
-  test('should set and get a boolean value', () => {
-    spDb.set('isActive', true);
-    expect(spDb.get('isActive')).toBe(true);
+  test("should set and get a boolean value", () => {
+    spDb.set("isActive", true);
+    expect(spDb.get("isActive")).toBe(true);
   });
 
-    test('should get all values', () => {
-      spDb.set('username', 'johndoe');
-      spDb.set('age', 30);
+  test("should get all values", () => {
+    spDb.set("username", "johndoe");
+    spDb.set("age", 30);
 
-      const allValues = spDb.getAll();
-      expect(allValues).toEqual({
-        username: 'johndoe',
-        age: 30
-      });
+    const allValues = spDb.getAll();
+
+    expect(allValues).toEqual({
+      username: "johndoe",
+      age: 30,
+    });
+  });
+
+  test("should delete a value", () => {
+    spDb.set("username", "johndoe");
+    spDb.delete("username");
+    expect(spDb.get("username")).toBeUndefined();
+  });
+
+  test("should handle multiple value types", () => {
+    const testData = {
+      string: "hello",
+      number: 42,
+      boolean: true,
+      complexString: "value with = sign",
+    };
+
+    Object.entries(testData).forEach(([key, value]) => {
+      spDb.set(key, value);
     });
 
-    test('should delete a value', () => {
-      spDb.set('username', 'johndoe');
-      spDb.delete('username');
-      expect(spDb.get('username')).toBeUndefined();
+    Object.entries(testData).forEach(([key, value]) => {
+      expect(spDb.get(key)).toBe(value);
     });
+  });
 
-    test('should handle multiple value types', () => {
-      const testData = {
-        string: 'hello',
-        number: 42,
-        boolean: true,
-        complexString: 'value with = sign'
-      };
-
-      Object.entries(testData).forEach(([key, value]) => {
-        spDb.set(key, value);
-      });
-
-      Object.entries(testData).forEach(([key, value]) => {
-        expect(spDb.get(key)).toBe(value);
-      });
-    });
-
-    test('should preserve comments', () => {
-      // Manually write a file with comments
-      const rawString = `
+  test("should preserve comments", () => {
+    // Manually write a file with comments
+    const rawString = `
         # This is a comment
         username=johndoe
         # Another comment
         age=30
         `;
-      fs.writeFileSync(spDb.DB_FILE_PATH, rawString.split('\n').map(line => line.trim()).join('\n'));
+    fs.writeFileSync(
+      spDb.DB_FILE_PATH,
+      rawString
+        .split("\n")
+        .map((line) => line.trim())
+        .join("\n")
+    );
 
-      const _spDb = new SimplePropertiesDB(rootPath);
-      const allValues = _spDb.getAll();
+    const _spDb = new SimplePropertiesDB(rootPath);
+    const allValues = _spDb.getAll();
 
-      expect(allValues).toEqual({
-        username: 'johndoe',
-        age: 30
-      });
-
-      const data = fs.readFileSync(spDb.DB_FILE_PATH, "utf8");
-      const lines = data.split("\n")
-              .filter(line => line.trim() !== "")
-              .filter(line => line.startsWith("#") || line.includes("="))
-        
-      expect(lines).toEqual(
-        [
-          "# This is a comment",
-          "username=johndoe",
-          "# Another comment",
-          "age=30",
-        ]
-      )
+    expect(allValues).toEqual({
+      username: "johndoe",
+      age: 30,
     });
+
+    _spDb.set("age", 31);
+    _spDb.set("new", "newv");
+
+    const data = fs.readFileSync(spDb.DB_FILE_PATH, "utf8");
+    const lines = data
+      .split("\n")
+      .filter((line) => line.trim() !== "")
+      .filter((line) => line.startsWith("#") || line.includes("="));
+
+    expect(lines).toEqual([
+      "# This is a comment",
+      "username=johndoe",
+      "# Another comment",
+      "age=31",
+      "new=newv",
+    ]);
+  });
 });
