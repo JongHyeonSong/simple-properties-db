@@ -2,11 +2,12 @@ const fs = require('fs');
 const path = require('path');
 
 class SimplePropertiesDB {
-    constructor(dbPath = "db.properties", options = {}) {
-        this.DB_PATH = path.isAbsolute(dbPath) ? dbPath : path.join(process.cwd(), dbPath);
-
-        if (!fs.existsSync(this.DB_PATH)) {
-            fs.writeFileSync(this.DB_PATH, "");
+    constructor(dbPath, options = {}) {
+        const absPath = path.isAbsolute(dbPath) ? dbPath : path.join(process.cwd(), dbPath);
+        this.DB_FILE_PATH = path.join(absPath, "db.properties");
+        
+        if (!fs.existsSync(this.DB_FILE_PATH)) {
+            fs.writeFileSync(this.DB_FILE_PATH, "");
         }
     }
 
@@ -19,7 +20,7 @@ class SimplePropertiesDB {
     }
 
     _loadData() {
-        const data = fs.readFileSync(this.DB_PATH, "utf8");
+        const data = fs.readFileSync(this.DB_FILE_PATH, "utf8");
         const lines = data.split("\n")
                 .filter(line => line.trim() !== "")
                 .filter(line => line.startsWith("#") || line.includes("="))
@@ -57,20 +58,23 @@ class SimplePropertiesDB {
 
     set(key, value) {
         const {originLines} = this._loadData();
-        const data = originLines.map(line => {
-            if (line.type === "property" && line.key === key) {
-                return `${key}=${value}`;
-            }
-            return line.value;
-        }).join("\n");
 
-        fs.writeFileSync(this.DB_PATH, data);
+        const target = originLines.find(line => line.type === "property" && line.key === key);
+        if (target) {
+            target.value = value;
+        } else {
+            originLines.push({type: "property", key, value});
+        }
+
+        const data = originLines.map(line => `${line.key}=${line.value}`).join("\n");
+
+        fs.writeFileSync(this.DB_FILE_PATH, data);
     }
 
     delete(key) {
         const {originLines} = this._loadData();
         const data = originLines.filter(line => line.type === "property" && line.key !== key).join("\n");
-        fs.writeFileSync(this.DB_PATH, data);
+        fs.writeFileSync(this.DB_FILE_PATH, data);
     }
 
 }
