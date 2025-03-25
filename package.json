@@ -1,12 +1,13 @@
 {
   "name": "simple-properties-db",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A simple file-based key-value properties database for Node.js",
   "main": "index.js",
   "scripts": {
     "test": "jest",
     "test:watch": "jest --watch",
-    "coverage": "jest --coverage"
+    "coverage": "jest --coverage",
+    "publish": "npm publish"
   },
   "jest": {
     "testEnvironment": "node"
