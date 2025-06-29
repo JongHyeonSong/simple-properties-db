@@ -1,6 +1,6 @@
 {
   "name": "simple-properties-db",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "A simple file-based key-value properties database for Node.js",
   "main": "index.js",
   "scripts": {
