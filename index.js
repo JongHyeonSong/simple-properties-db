@@ -6,8 +6,17 @@ class SimplePropertiesDB {
         const absPath = path.isAbsolute(dbPath) ? dbPath : path.join(process.cwd(), dbPath);
         this.DB_FILE_PATH = path.join(absPath, "db.properties");
         
+        // Extract the directory part of the path
+        const dir = path.dirname(this.DB_FILE_PATH);
+
+        // Ensure the directory exists
+        if (!fs.existsSync(dir)) {
+            fs.mkdirSync(dir, { recursive: true });
+        }
+
+        // Then safely create the file
         if (!fs.existsSync(this.DB_FILE_PATH)) {
-            fs.writeFileSync(this.DB_FILE_PATH, "");
+            fs.writeFileSync(this.DB_FILE_PATH, '');
         }
     }
 
